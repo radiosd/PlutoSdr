@@ -13,13 +13,7 @@ NO_BITS = 12                      # internal ADC and DAC width
 from pluto.iio_lambdas import _M2Str
 
 from pluto import pluto_dds
-from pluto.controls import ON, OFF
-
-def devFind(ctx, name):
-    dev = ctx.find_device(name)
-    if dev is None:
-        raise NameError('device '+name+' not found')
-    return dev
+from pluto.controls import devFind, ON, OFF
 
 class PlutoSdr(object):
     """Encapsulation of Pluto SDR device
