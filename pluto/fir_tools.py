@@ -1,3 +1,4 @@
+
 """
    Basic FIR designs and plotting
 
@@ -51,4 +52,7 @@ def fir_plot(b, a=1, grid=True, phase=False):
         plt.grid()
     #plt.axis('tight')
     plt.show()
-               
+
+if __name__=='__main__':
+    pass
+

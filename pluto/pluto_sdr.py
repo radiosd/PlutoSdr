@@ -13,7 +13,7 @@ NO_BITS = 12                      # internal ADC and DAC width
 from pluto.iio_lambdas import _M2Str
 
 from pluto import pluto_dds
-from pluto.controls import devFind, ON, OFF
+from pluto.controls import devFind, ON, OFF, FLOAT, COMPLEX
 
 class PlutoSdr(object):
     """Encapsulation of Pluto SDR device
@@ -185,17 +185,17 @@ class PlutoSdr(object):
         iq = 2**-(self.no_bits-1)*data.astype(FLOAT)
         return iq.view(COMPLEX)
     
-    def capture(self, no_samples=0x800, raw=False, desc=''):
+    def capture(self, no_samples=0x4000, raw=False, desc=''):
         """read data from the rx and save with other RF params in a dict"""
         ans = {'desc':desc}
-        ans['fs'] = self.rx_sampling_freq
+        ans['fs'] = self.rx_sampling_frequency
         ans['fc'] = self.rx_lo_freq
         ans['rx_bw'] = self.rx_bandwidth
         ans['rx_gain'] = self.rx_gain
         ans['data'] = self.readRx(no_samples, raw=raw)
         # for raw data the device must provide the no of bits
         if raw:                     
-            ans['bits'] = 12   
+            ans['bits'] = self.no_bits   
         return ans              
     # -------------------- Transmitter control------------------------
     def txStatus(self, show_dds=False):
@@ -280,28 +280,26 @@ class PlutoSdr(object):
         iq = np.round((2**(no_bits-1))*data.view(FLOAT)).astype(np.int16)
         return iq
     
-    def writeTx(self, samples, raw=False, half=False):
+    def writeTx(self, samples, raw=False):
         """write to the Tx buffer and make it cyclic"""
         if self._tx_buff is not None:
             self._tx_buff = None               # turn off any previous signal
-        if samples is None or samples==OFF:    # turn off transmitter
-            logging.debug('tx: off')
+        if isinstance(samples, bool) or len(samples)==0:          
+            logging.debug('tx: off')           # leave with transmitter off
             return
         if raw:
-            data = samples<<4
-            no_samples = len(data)//2
+            data = samples<<4         # align 12 bit raw to msb
         else:   # samples some are from some DiscreteSignalSource, so
                 # data is complex IQ and scaled to +/-1.0 float range
+                # use 16 **not** self.no_bits to align data to msb
             data = self.complex2raw(samples, 16)
-            no_samples = len(data)//2
+        no_samples = len(data)//2
         for ch in self.tx_channels:   # enable the tx channels
             ch.enabled = True
         try:  # create a cyclic iio buffer for continuous tx output
-            if half:
-                self._tx_buff = iio.Buffer(self.dac, no_samples//2, True)
-            else:
-                self._tx_buff = iio.Buffer(self.dac, no_samples, True)
+            self._tx_buff = iio.Buffer(self.dac, no_samples//2, True)
             count = self._tx_buff.write(data)
+            logging.debug(str(count)+' samples transmitted')
             self._tx_buff.push()
         except OSError:
             for ch in chs:
@@ -312,17 +310,17 @@ class PlutoSdr(object):
         return count # just for now
 
     def txOutputFreq(self):
-        # read only for now
+        # read only for now - confused as to which one is the controlling value
         # look at the various possibilities
-        dds = self.dds
+        dac = self.dac
         various = {}
-        various['TX1_I_F1'] = dds.channels[0].attrs['sampling_frequency'].value
-        various['TX1_I_F2'] = dds.channels[1].attrs['sampling_frequency'].value
-        various['TX1_Q_F1'] = dds.channels[2].attrs['sampling_frequency'].value
-        various['TX1_Q_F2'] = dds.channels[3].attrs['sampling_frequency'].value       
+        various['TX1_I_F1'] = dac.channels[0].attrs['sampling_frequency'].value
+        various['TX1_I_F2'] = dac.channels[1].attrs['sampling_frequency'].value
+        various['TX1_Q_F1'] = dac.channels[2].attrs['sampling_frequency'].value
+        various['TX1_Q_F2'] = dac.channels[3].attrs['sampling_frequency'].value       
 
-        various['volt0'] = dds.channels[4].attrs['sampling_frequency'].value
-        various['volt1'] = dds.channels[5].attrs['sampling_frequency'].value     
+        various['volt0'] = dac.channels[4].attrs['sampling_frequency'].value
+        various['volt1'] = dac.channels[5].attrs['sampling_frequency'].value     
         return various
     # ------------------------ DDS Control ---------------------------
     def ddsState(self, value):
@@ -358,7 +356,7 @@ if __name__=='__main__':
     pp = PlutoSdr(PLUTO_ID)
     pp.tx_lo_freq = 430
     pp.rx_lo_freq = 430
-    pp.sampling_freq = 10
+    pp.sampling_frequency = 10
 
     def _sampling(ch):
         return float(ch.attrs['sampling_frequency'].value)/1e6
@@ -367,6 +365,18 @@ if __name__=='__main__':
         ans = [float(v)/1e6 for v in
                ch.attrs['sampling_frequency_available'].value.split()]
         return ans
+
+    def fittedSin(no_samples, no_cycles):
+        """Exact no_cycles in the sample length"""
+        nn = np.arange(no_samples)
+        si = np.sin(2*np.pi*nn*no_cycles/len(nn))
+        ci = np.cos(2*np.pi*nn*no_cycles/len(nn))
+        return ci + 1j*si
+
+    def plotCS(sig, centre=0, span=100):
+        """plot a slice of sig"""
+        xx = range(centre-span//2, centre+span//2)
+        return (xx, np.take(sig.real, xx), xx, np.take(sig.imag, xx))
 
     def querySampling(dev):
         adc1 = dev.adc.channels[0]

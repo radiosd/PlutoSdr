@@ -5,8 +5,6 @@ Ver 1.0.1x	Initial release good control of all RF parameters for both Rx and Tx.
 
 
 ToDo:
-*) Incomplete testing of PlutoSdr
-*) There is the ability to readRx anw writeTx, but not a way to save receievd signals or send recorded signals
-   capture() and playback() have been done for RTL device. Open issue is the ''other'' information on the
-   device (LO, description etc)
-*) No way to load Rx/Tx FIR filters
+*) Incomplete testing of PlutoSdr - cannot see how to test code without the device connected
+*) There is the ability to readRx and writeTx, but not a way to save received signals or send recorded signals; capture() and playback() have been done for RTL device. Open issue is the ''other'' information on the device (LO, description etc)
+*) Limited implementation of rx/tx fir control

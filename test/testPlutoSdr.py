@@ -75,7 +75,7 @@ class TestplutoSdr(unittest.TestCase):
         sdr = self.sdr
         fs = sdr.sampling_frequency
         interpolate = sdr.tx_interpolation
-        sdr.interpolation = True
+        sdr.tx_interpolation = True
         self.assertEqual(sdr.txBBSampling(), fs/8, 'interpolation on')
         sdr.interpolation = interpolate
         bw = sdr.tx_bandwidth      # this is the turn on value
