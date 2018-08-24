@@ -3,6 +3,7 @@ PlutoSdr
 Ver 1.0.1x	Initial release good control of all RF parameters for both Rx and Tx.
 		Some useful tests, but see ToDo.
 
+Ver 1.0.2	Corrections and modifications with inclusion of LGPLv2 license conditions
 
 ToDo:
 *) Incomplete testing of PlutoSdr - cannot see how to test code without the device connected

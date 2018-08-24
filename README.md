@@ -8,13 +8,27 @@ class used to define the control of that.  An instance of PlutoSdr automatically
 Getting Started
 ---------------
 Dependancies: iio, changeExt
-changeExt is in rsdLib.fileUtils obtainable from github.com/radiosd/rsdLib.git
 
-Installation is via the standard python setup.py install.
+iio 
+ - clone from https://analogdevicesinc/libiio.git and 
+ - follow standard cmake, built etc
+ - the iio library is installed using setup.py in bindings/python
 
-from pluto import PlutoSdr
-sdr = PlutoSdr.PlutoSdr()
+changeExt
+ - clone from https://github.com/radiosd/rsdLib.git
+ - use setup.py to install
+
+Installation
+------------
+Installation of PlutoSdr is via the standard python setup.py install.
+
+from pluto.pluto_sdr import PlutoSdr
+sdr = PlutoSdr()
 
 Uses the default url which should be the case for a single device 
 The instance has properties to control RF functions of both the Rx and the Tx as well as the internal DDS to transmit up to 2 tones for testing. 
 In general frequency controls are in MHz and amplitude controls are dBfs
+
+License
+-------
+This software is Copyright (C) 2018 Radio System Desing Ltd. and released under GNU Lesser General Public License.  See the enclosed licebse file for details.

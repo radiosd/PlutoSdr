@@ -19,7 +19,7 @@ setup(name='PlutoSDR',
          'The library package for access and control the PlutSDR hardware',
       author = 'Richard Ranson',
       scripts = [],   # add name(s) of script(s)
-      packages = [pluto]   # add name(s) of package(s)
+      packages = ['pluto']   # add name(s) of package(s)
       )
 
 # I'm sure there is more to add, but for now ok to install packaged and scripts

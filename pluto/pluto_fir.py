@@ -1,7 +1,18 @@
 """
    Access to and control of pluto fir filters
-
                                                           rgr11Aug18
+ * Copyright (C) 2018 Radio System Desing Ltd.
+ * Author: Richard G. Ranson, richard@radiosystemdesign.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation under
+ * version 2.1 of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
 """
 from __future__ import print_function
 
@@ -113,7 +124,7 @@ class FirConfig(object):
         self.dev.reg_write(RX_FIR_GAIN, gain)
     # ------------------------ write to fir ----------------------------
     def pushCoeffs(self, trx):
-        """trigger write to values to T or R fir registers"""
+        """trigger write of values to T or R fir registers"""
         self.dev.reg_write(self.configReg(trx), 0xFE)
                            
     def writeRegPair(self, addr, value):
@@ -126,7 +137,7 @@ class FirConfig(object):
         self.disable()
         self.clock('tx', ON)
         self.write('tx', ON)
-        # loop through all writting the values from offset 0
+        # loop through all writing the values from offset 0
         for i in range(len(coeffs)):
             self.dev.reg_write(TX_COEFF_ADDR, i)
             self.writeRegPair(TX_WRITE_REG, coeffs[i])
@@ -145,7 +156,7 @@ class FirConfig(object):
         self.disable()
         self.clock('rx', ON)
         self.write('rx', ON)
-        # loop through all writting the values from offset 0
+        # loop through all writing the values from offset 0
         for i in range(len(coeffs)):
             self.dev.reg_write(RX_COEFF_ADDR, i)
             self.writeRegPair(RX_WRITE_REG, coeffs[i])

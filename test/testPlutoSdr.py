@@ -124,8 +124,9 @@ if __name__=='__main__':
     # show what is being tested and from where
     print('\nTesting class plutoSdr in module:\n',path.abspath(pluto_sdr.__file__))
         
-    logging.basicConfig(format='%(module)-12s.%(funcName)-12s:%(levelname)s - %(message)s',
-                        stream=sys.stdout, level=logging.INFO)
+    logging.basicConfig(
+        format='%(module)-12s.%(funcName)-12s:%(levelname)s - %(message)s',
+        stream=sys.stdout, level=logging.INFO)
     class LogFilter(logging.Filter):
         def __init__(self, module):
             self.module = module

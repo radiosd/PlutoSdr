@@ -5,6 +5,18 @@
    Channels are input or output to transfer data with control attibutes
 
                                                           rgr15jul18
+ * Copyright (C) 2018 Radio System Desing Ltd.
+ * Author: Richard G. Ranson, richard@radiosystemdesign.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation under
+ * version 2.1 of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
 """
 from __future__ import print_function
 
@@ -22,6 +34,8 @@ def iioFind(iio_item, name):
 
 
 def iioList(item):
+    """show information on the iio_class instance given"""
+    # info is appropriate for the class supplied
     if isinstance(item, iio.Context):
         print(listContext(item))
     elif isinstance(item, iio.Device):

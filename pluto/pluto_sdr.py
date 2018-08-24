@@ -1,3 +1,19 @@
+"""
+    Basic class to simplifiy interaction with pluto as an iio device
+                                                            rgr12jan18
+ * Copyright (C) 2018 Radio System Desing Ltd.
+ * Author: Richard G. Ranson, richard@radiosystemdesign.com
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation under
+ * version 2.1 of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+"""
 # basic class to simplifiy interaction with pluto as an iio device
 from __future__ import print_function
 
@@ -17,7 +33,7 @@ from pluto.controls import devFind, ON, OFF, FLOAT, COMPLEX
 
 class PlutoSdr(object):
     """Encapsulation of Pluto SDR device
-       iio lib interfaced used to expose common functionality"""
+       iio lib interface used to expose common functionality"""
     # nothing to force this to be a singleton - it would make sense to do that
     # however, multiples do seem to exists without conflict
     no_bits = NO_BITS
@@ -41,7 +57,7 @@ class PlutoSdr(object):
         self.tx_channels = [self.dac.find_channel('voltage0', True)]
         self.tx_channels.append(self.dac.find_channel('voltage1', True))        
         # also access to the internal 2 tone generator
-        self.dds = pluto_dds.Dds(self.dac)
+        self.dds = pluato_dds.Dds(self.dac)
         #  tx buffer, created in writeTx and retained for continuous output 
         self._tx_buff = None
     # ----------------- TRx Physical Layer controls -----------------------
@@ -133,7 +149,7 @@ class PlutoSdr(object):
     def _set_rxBW(self, value):
         self.phy_rx.attrs['rf_bandwidth'].value = _M2Str(value)
         
-    rx_bandwidth = property(_get_rxBW, _set_rxBW)
+    rx_bandwidth = property(_get_rxBW, _set_rxBW, doc='RF bandwidth of rx path')
         
     def _get_rx_gain(self):
         """read the rx RF gain in dB"""
@@ -153,6 +169,20 @@ class PlutoSdr(object):
                                        .value = '{:2.3f} dB'.format(value)
             
     rx_gain = property(_get_rx_gain, _set_rx_gain)
+
+    def _set_rx_gain_mode(self, mode):
+        avail = self.phy_rx.attrs['gain_control_mode_available'].value
+        options = avail.split()
+        opts = [av[0].upper() for av in options]
+        if mode[0].upper() in opts:
+            print('set:', options[opts.index(mode[0])])
+        else:
+            print('modes are:', avail.title())
+    
+    def _get_rx_gain_mode(self, mode):
+        pass
+    rx_gain_mode = property(_get_rx_gain_mode, _set_rx_gain_mode)
+    
     # getting data from the rx  
     def _get_rx_data(self):
         self._adc_iio_buffer.refill()
