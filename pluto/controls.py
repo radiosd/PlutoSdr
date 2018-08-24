@@ -1,7 +1,7 @@
 """
     Constants for contol of pluto sdr and dds 
                                                           rgr01aug18
- * Copyright (C) 2018 Radio System Desing Ltd.
+ * Copyright (C) 2018 Radio System Design Ltd.
  * Author: Richard G. Ranson, richard@radiosystemdesign.com
  *
  * This library is free software; you can redistribute it and/or

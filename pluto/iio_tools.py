@@ -5,7 +5,7 @@
    Channels are input or output to transfer data with control attibutes
 
                                                           rgr15jul18
- * Copyright (C) 2018 Radio System Desing Ltd.
+ * Copyright (C) 2018 Radio System Design Ltd.
  * Author: Richard G. Ranson, richard@radiosystemdesign.com
  *
  * This library is free software; you can redistribute it and/or

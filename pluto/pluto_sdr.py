@@ -1,7 +1,7 @@
 """
     Basic class to simplifiy interaction with pluto as an iio device
                                                             rgr12jan18
- * Copyright (C) 2018 Radio System Desing Ltd.
+ * Copyright (C) 2018 Radio System Design Ltd.
  * Author: Richard G. Ranson, richard@radiosystemdesign.com
  *
  * This library is free software; you can redistribute it and/or
@@ -34,14 +34,12 @@ from pluto.controls import devFind, ON, OFF, FLOAT, COMPLEX
 class PlutoSdr(object):
     """Encapsulation of Pluto SDR device
        iio lib interface used to expose common functionality"""
-    # nothing to force this to be a singleton - it would make sense to do that
-    # however, multiples do seem to exists without conflict
     no_bits = NO_BITS
     def __init__(self, uri=PLUTO_ID):
         # access to internal devices
         try:
             self.ctx = iio.Context(uri)
-        except FileNotFoundError:
+        except OSError:
             print('exception: no iio device context found at',uri)
             return
         logging.debug('found context for pluto device')
@@ -57,7 +55,7 @@ class PlutoSdr(object):
         self.tx_channels = [self.dac.find_channel('voltage0', True)]
         self.tx_channels.append(self.dac.find_channel('voltage1', True))        
         # also access to the internal 2 tone generator
-        self.dds = pluato_dds.Dds(self.dac)
+        self.dds = pluto_dds.Dds(self.dac)
         #  tx buffer, created in writeTx and retained for continuous output 
         self._tx_buff = None
     # ----------------- TRx Physical Layer controls -----------------------

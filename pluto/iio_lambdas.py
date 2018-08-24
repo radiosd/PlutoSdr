@@ -3,7 +3,7 @@
     They all use strings to represent numbers, some with value scaling 
     and some with units appended to the end.
                                                             rgrjul2518
- * Copyright (C) 2018 Radio System Desing Ltd.
+ * Copyright (C) 2018 Radio System Design Ltd.
  * Author: Richard G. Ranson, richard@radiosystemdesign.com
  *
  * This library is free software; you can redistribute it and/or

@@ -1,7 +1,7 @@
 """
     Read the .ftr file from ADI/Matlab and return a dict of contents
                                                           rgr15Aug18
- * Copyright (C) 2018 Radio System Desing Ltd.
+ * Copyright (C) 2018 Radio System Design Ltd.
  * Author: Richard G. Ranson, richard@radiosystemdesign.com
  *
  * This library is free software; you can redistribute it and/or
