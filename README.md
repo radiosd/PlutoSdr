@@ -20,15 +20,16 @@ changeExt
 
 Installation
 ------------
-Installation of PlutoSdr is via the standard python setup.py install.
+Installation of PlutoSdr is via the standard python setup.py install. Then:
 
+```python
 from pluto.pluto_sdr import PlutoSdr
-sdr = PlutoSdr()
 
-Uses the default url which should be the case for a single device 
-The instance has properties to control RF functions of both the Rx and the Tx as well as the internal DDS to transmit up to 2 tones for testing. 
-In general frequency controls are in MHz and amplitude controls are dBfs
+sdr = PlutoSdr()
+```
+
+The example above uses the default url for creating the PlutoSdr class instance.  The instance has properties to control RF functions of both the Rx and the Tx as well as the internal DDS to transmit up to 2 tones for testing.  In general, frequency controls are in MHz and amplitude controls are dBfs.  There are also functions to readRx() and writeTx() samples, providing a straight forward bytearray interface to the RF hardware.
 
 License
 -------
-This software is Copyright (C) 2018 Radio System Desing Ltd. and released under GNU Lesser General Public License.  See the enclosed licebse file for details.
+This software is Copyright (C) 2018 Radio System Design Ltd. and released under GNU Lesser General Public License.  See the license file in the repository for details.
