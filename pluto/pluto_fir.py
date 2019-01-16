@@ -15,6 +15,7 @@
  * Lesser General Public License for more details.
 """
 from __future__ import print_function
+from rsdLib.fileUtils import changeExt
 
 # SPI control register locations
 TX_COEFF_ADDR = 0x60     # read/write from/to this coeff offset
@@ -37,7 +38,7 @@ def twosC2Int(b1, b0):
 ##    v = ((b1<<8) + b0 )
 ##    return v -(1<<16) if b1 & (1<<7) else v
     return np.int16((b1<<8) + b0)
-    
+
 def int2TwosC(value):
     """2 byte twos compliment representation of value given"""
 ##    b1, b0 = divmod(value, 1<<8)
@@ -45,7 +46,7 @@ def int2TwosC(value):
 ##        b1 += 1<<8
     b1, b0 = divmod(np.int16(value), 1<<8)
     return (np.ubyte(b1), np.ubyte(b0))
-    
+
 def setBit(index, value, on):
     mask = 1<<index
     value &= ~mask            # clear the bit
@@ -56,7 +57,7 @@ def setBit(index, value, on):
 import logging
 import os
 from pluto.controls import ON, OFF
-  
+
 class FirConfig(object):
     def __init__(self, device):
         self.ftr_file = None
@@ -77,7 +78,7 @@ class FirConfig(object):
             return RX_FIR_CONFIG
         else:
             raise ValueError('unknown signal path must be tx or rx')
-        
+
     def clock(self, trx, on):
         """clock control is <1> in  T or R config register"""
         c_reg = self.configReg(trx)
@@ -89,7 +90,7 @@ class FirConfig(object):
         c_reg = self.configReg(trx)
         value = self.dev.reg_read(c_reg)
         self.dev.reg_write(c_reg, setBit(2, value, on))
-                           
+
     def txConfig(self, no_taps, gain):
         """pluto has only 1 tx channel"""
         if no_taps>128 and not (no_taps % 16==0):
@@ -98,12 +99,12 @@ class FirConfig(object):
         b7_5 = ((no_taps//16) - 1)<<5    # <7:5> number of taps
         b4_3 = 3<<3                      # <4:3> select TX 1, 2 or 3=both
         b2 = 0                           # <2>   write
-        b1 = 0                           # <1>   Start clock 
+        b1 = 0                           # <1>   Start clock
         b0 = 0 if gain==0 else 1         # <0>   filter gain set = -6dB
         value = b7_5 + b4_3 + b2 + b1 + b0
         logging.info('Tx config 0x{:x}'.format(value))
         self.dev.reg_write(TX_FIR_CONFIG, value)
-        
+
     def rxConfig(self, no_taps, gain):
         """pluto has only 1 rx channel"""
         if no_taps>128 and not (no_taps % 16==0):
@@ -112,7 +113,7 @@ class FirConfig(object):
         b7_5 = ((no_taps//16) - 1)<<5    # <7:5> number of taps
         b4_3 = 3<<3                      # <4:3> select RX 1, 2 or 3=both
         b2 = 0                           # <2>   write
-        b1 = 0                           # <1>   Start clock 
+        b1 = 0                           # <1>   Start clock
         b0 = 0                           # reserved
         value = b7_5 + b4_3 + b2 + b1 + b0
         logging.info('Rx config 0x{:x}'.format(value))
@@ -126,7 +127,7 @@ class FirConfig(object):
     def pushCoeffs(self, trx):
         """trigger write of values to T or R fir registers"""
         self.dev.reg_write(self.configReg(trx), 0xFE)
-                           
+
     def writeRegPair(self, addr, value):
         b1, b0 = int2TwosC(value)
         self.dev.reg_write(addr, b0)
@@ -175,16 +176,16 @@ class FirConfig(object):
         lsb = self.dev.reg_read(start_add)
         usb = self.dev.reg_read(start_add+1)
         return twosC2Int(usb, lsb)
-    
+
     def readTx(self):
         """read and return all the TX FIR coeffs"""
         self.dev.reg_write(TX_FIR_CONFIG, 0xEA)
-        coeffs = [] 
+        coeffs = []
         for addr in range(0x80):
             self.dev.reg_write(TX_COEFF_ADDR, addr)
             coeffs.append(self.readRegPair(TX_READ_REG))
         return np.trim_zeros(coeffs) # remove leading/trailing zeros
-    
+
     def readRx(self):
         """read and return all the RX FIR coeffs"""
         self.dev.reg_write(RX_FIR_CONFIG, 0xEA)
@@ -197,8 +198,7 @@ class FirConfig(object):
     def loadFile(self, filename):
         """read filter and config data from a ftr file"""
         self.disable()
-        # use changeExt from r??Lib
-        # filename = changeExt(filename, 'ftr')
+        filename = changeExt(filename, 'ftr')
         if os.path.isfile(filename):
             with open(filename, 'r') as fin:
                 ftr_file = fin.read()
@@ -224,4 +224,3 @@ if __name__=='__main__':
         #fir.loadFile('test/GSM.ftr')
     except IOError as er1:
         print('requires an ADALM Pluto to be connected')
-    

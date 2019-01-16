@@ -7,10 +7,10 @@ class used to define the control of that.  An instance of PlutoSdr automatically
 
 Getting Started
 ---------------
-Dependancies: iio, changeExt
+Dependancies:
 
 iio 
- - clone from https://analogdevicesinc/libiio.git and 
+ - clone from https://github.com/analogdevicesinc/libiio.git and 
  - follow standard cmake, built etc
  - the iio library is installed using setup.py in bindings/python
 
