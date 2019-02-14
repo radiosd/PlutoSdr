@@ -87,7 +87,7 @@ class PlutoSdr(object):
         
     def loopBack(self, enable):   # not yet used or tested
         """turn loop-back function on/off"""
-        self.phy.debug_attrs['loop_back'].value = enable
+        self.phy.debug_attrs['loopback'].value = enable
 
     # ---------------------- Receiver control-------------------------
     # property actual value may be slightly different because the
@@ -216,7 +216,7 @@ class PlutoSdr(object):
     def capture(self, no_samples=0x4000, raw=False, desc=''):
         """read data from the rx and save with other RF params in a dict"""
         ans = {'desc':desc}
-        ans['fs'] = self.rx_sampling_frequency
+        ans['fs'] = self.sampling_frequency
         ans['fc'] = self.rx_lo_freq
         ans['rx_bw'] = self.rx_bandwidth
         ans['rx_gain'] = self.rx_gain
@@ -233,7 +233,7 @@ class PlutoSdr(object):
         print('   BW:{:5.1f}MHz    LO: {:7.2f}MHz'\
               .format(self.tx_bandwidth, self.tx_lo_freq))
         state = 'off' if self._tx_buff is None else 'on'
-        print(' Gain:{:4.1f}dB state: {:s}'\
+        print(' Gain:{:4.1f}dB  State: {:s}'\
               .format(self.tx_gain, state))
         if show_dds:
             if self.dds.isOff():
@@ -286,7 +286,7 @@ class PlutoSdr(object):
     def _set_tx_gain(self, value):
         """set the tx RF gain in dB"""
         if value>0:
-            raise(ValueError, 'tx gain is an attenuation, so always negative')
+            raise ValueError('tx gain is an attenuation, so always negative')
         self.phy_tx.attrs['hardwaregain']\
                                   .value = '{:2.3f} dB'.format(value)
         
@@ -312,12 +312,12 @@ class PlutoSdr(object):
         """write to the Tx buffer and make it cyclic"""
         if self._tx_buff is not None:
             self._tx_buff = None               # turn off any previous signal
-        if isinstance(samples, bool) or len(samples)==0:          
+        if not(isinstance(samples, np.ndarray)):          
             logging.debug('tx: off')           # leave with transmitter off
             return
         if raw:
             data = samples<<4         # align 12 bit raw to msb
-        else:   # samples some are from some DiscreteSignalSource, so
+        else:   # samples cna come from some DiscreteSignalSource, if so
                 # data is complex IQ and scaled to +/-1.0 float range
                 # use 16 **not** self.no_bits to align data to msb
             data = self.complex2raw(samples, 16)
@@ -329,18 +329,18 @@ class PlutoSdr(object):
             count = self._tx_buff.write(data)
             logging.debug(str(count)+' samples transmitted')
             self._tx_buff.push()
-        except OSError:
+        except OSError as osex:
             for ch in chs:
                 ch.enabled = False
             self._tx_buff = None
-            raise OSError('failed to create an iio buffer')
+            raise OSError('failed to create an iio buffer') from osex
         # buffer retained after a successful call
         return count # just for now
 
     def txOutputFreq(self):
         # read only for now - confused as to which one is the controlling value
         # look at the various possibilities
-        dac = self.dac
+        dac = self.dac.device
         various = {}
         various['TX1_I_F1'] = dac.channels[0].attrs['sampling_frequency'].value
         various['TX1_I_F2'] = dac.channels[1].attrs['sampling_frequency'].value
