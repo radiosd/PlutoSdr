@@ -102,7 +102,7 @@ class DdsTone(object):
         """set the amplitude given with  0 <= amp <= 1"""
         if amp<0 or amp>1:
             raise ValueError('amplitude must be positive and unity maximum')
-        self._amp = amp
+        # self._amp = amp
         self._setAmplitude(amp)
 
     def _setAmplitude(self, amp):
@@ -111,15 +111,15 @@ class DdsTone(object):
         self.q_ch.attrs['scale'].value = '{:1.6f}'.format(round(amp,6))
     amplitude = property(getAmplitude, setAmplitude)
 
-    def state(self, value):
-        """control the on/off state of the tone"""
-        if value==OFF:
-            logging.debug('off')
-            self._amp = self.amplitude
-            self._setAmplitude(0)
-        else:
-            logging.debug('on')
-            self.amplitude = self._amp
+ ##   def state(self, value):
+ ##       """control the on/off state of the tone"""
+ ##       if value==OFF:
+ ##           logging.debug('off')
+ ##           self._amp = self.amplitude
+ ##           self._setAmplitude(0)
+ ##       else:
+ ##           logging.debug('on')
+ ##           self.amplitude = self._amp
         
     def status(self):
         return (self.amplitude, self.frequency, self.phase)
@@ -143,20 +143,22 @@ class Dds(object):
         logging.debug('create Dds instance')
         self.t1 = DdsTone(dev, 'F1')
         self.t2 = DdsTone(dev, 'F2')
-        # initialise with both off
-        self.setAmplitude()
-##        self.t1_amplitude = 0  # this should now be obsolete
-##        self.t2_amplitude = 0
+        # 4 dac output channels (i, q) each for t1 and t2
+        self.channels = [dev.find_channel('altvoltage0', True)]
+        self.channels.append(dev.find_channel('altvoltage1', True))
+        self.channels.append(dev.find_channel('altvoltage2', True))
+        self.channels.append(dev.find_channel('altvoltage3', True))
+        # initialise with both off and init with 0 amplitude
+        self.state(OFF);
 
     def getSamplingFreq(self):
         """return the sampling freq in MHz. Read only"""
         return self.t1.getSamplingFreq()
 
-    def setAmplitude(self, amp1=None, amp2=None):
-        """set amplitude of the tones in dB, default None turns off """
-        if amp1 is None:
-            self.t1.setAmplitude(0)
-        elif amp1<=0:
+    def setAmplitude(self, amp1, amp2=None):
+        """set amplitude of the tones in dB, deprecated, default None turns off """
+        # now use state(value) to turn on/off
+        if amp1<=0:
             self.t1.amplitude = 10**(amp1/10.0)
         else:
             raise ValueError('tone amplitudes set in -dB levels')
@@ -177,8 +179,18 @@ class Dds(object):
         if ph2 is not None:
             self.t2.setphase(ph2)
 
+    def state(self, value):
+        """set on/off state for both DDS tones"""
+        # this is independent of the amplidude
+        # possibly only need to switch 1 but do all 4
+        for ch in self.channels:
+            if value==OFF:
+                ch.attrs['raw'].value = '0'
+            else:
+                ch.attrs['raw'].value = '1'
+
     def isOff(self):
-        return self.t1.amplitude==0 and self.t1.amplitude==0
+        return self.channels[0].attrs['raw'].value=='0' # only test 1
     
     def status(self, tone=1):
         tone = self.t1 if tone==1 else  self.t2

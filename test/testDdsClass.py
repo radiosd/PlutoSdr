@@ -17,6 +17,7 @@ import numpy.testing as npt
 
 import iio
 from pluto import pluto_dds
+from pluto.controls import ON, OFF
 
 class TestDdsClass(unittest.TestCase):
 
@@ -64,25 +65,26 @@ class TestDdsClass(unittest.TestCase):
     def testSetAmplitude(self):
         """confirm amplitude values read/write and amp <= 0 dB"""
         dds = pluto_dds.Dds(self.dev)
-        dds.setAmplitude()
+        # dds.setAmplitude()  should be created OFF
         self.assertEqual(dds.t1.amplitude, 0,
-                         'no arguments turns amplitude 1 off')
+                         'created with amplitude 1 off')
         self.assertEqual(dds.t2.amplitude, 0,
-                         'no arguments turns amplitude 2 off')
-        with self.assertRaises(ValueError,
-                    msg='values set in -dB '):
+                         'created with amplitude 2 off')
+        with self.assertRaises(ValueError, msg='values set in -dB '):
             dds.setAmplitude(10)
         dds.setAmplitude(-10)  # this is in dB
         npt.assert_almost_equal(dds.t1.amplitude, 0.1, decimal=3,
-                         err_msg='first arguments turn sets f1 amplitude')
+                         err_msg='first arguments sets f1 amplitude')
         self.assertEqual(dds.t2.amplitude, 0,
                          'no arguments turn amplitude 2 off')
-        self.assertFalse(dds.isOff(), 'only 1 tone indicates on')
         dds.setAmplitude(-13, -13)
         npt.assert_almost_equal(dds.t1.amplitude, 0.05, decimal=3,
                          err_msg='first arguments sets f1 amplitude')
         npt.assert_almost_equal(dds.t2.amplitude, 0.05, decimal=3,
                          err_msg='second arguments sets f2 amplitude')
+        self.assertTrue(dds.isOff(), 'created OFF, independent of amplitude')   
+        dds.state(ON);     
+        self.assertFalse(dds.isOff(), 'have to explicitly turn on')
     
 if __name__=='__main__':
     # for now need a device connected to do tests

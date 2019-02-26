@@ -69,6 +69,11 @@ class TestplutoSdr(unittest.TestCase):
         self.assertEqual(sdr.rx_gain, 20.0, 'gain set in dB')
         sdr.rx_gain = gain
         self.assertEqual(sdr.rx_gain, gain, 're-set to original gain')
+        mode = sdr.rx_gain_mode
+        sdr.rx_gain_mode = 'f'
+        self.assertEqual(sdr.rx_gain_mode[:4], 'fast', 'alter gain mode by first letter')
+        sdr.rx_gain_mode = mode
+
         
     def testTxAttributes(self):
         """confirm read and write to tx properties"""
@@ -100,16 +105,16 @@ class TestplutoSdr(unittest.TestCase):
         """confirm higher level control of DDS"""
         sdr = self.sdr
         state = sdr.dds.isOff()
-        sdr.ddsState(OFF)
+        sdr.dds.state(OFF)
         self.assertTrue(sdr.dds.isOff(), 'dds off from sdr function')
-        sdr.ddsState(ON)        # on with 0 amplituide is still off
+        sdr.dds.state(ON)        # on with 0 amplituide is still off
         sdr.dds.setAmplitude(-1, -1)   # set some level
         self.assertFalse(sdr.dds.isOff(), 'dds on from sdr function')
         npt.assert_almost_equal(sdr.dds.t1.amplitude, 10**(-1.0/10), decimal=4,
                                err_msg='t1 amplitude set correctly')
         npt.assert_almost_equal(sdr.dds.t2.amplitude, 10**(-1.0/10), decimal=4,
                                err_msg='t2 amplitude set correctly')
-        sdr.ddsState(state)
+        sdr.dds.state(state)
     
 if __name__=='__main__':
     # for now need a device connected to do tests

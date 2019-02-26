@@ -85,13 +85,13 @@ class TestDdsTone(unittest.TestCase):
         tone = pluto_dds.DdsTone(self.dev, 'F1')
         tone.amplitude = 0.5   # some initial setting
         self.assertEqual(tone.amplitude, 0.5, "setting attribute ok")
-        tone.state(OFF)
-        self.assertEqual(tone.amplitude, 0.0, "off make amplitude 0")
-        tone.state(ON)
+        tone.i_ch.attrs['raw'].value = '0'
+        self.assertEqual(tone.amplitude, 0.5, "off preserves amplitude")
+        tone.i_ch.attrs['raw'].value = '1'
         self.assertEqual(tone.amplitude, 0.5, "return to previous setting")
-        tone.state(OFF)
+        tone.i_ch.attrs['raw'].value = '0'
         tone.amplitude = 0.1
-        tone.state(ON)
+        tone.i_ch.attrs['raw'].value = '1'
         npt.assert_almost_equal(tone.amplitude, 0.1, decimal=4,
                                 err_msg="ok setting change even when off")
 
