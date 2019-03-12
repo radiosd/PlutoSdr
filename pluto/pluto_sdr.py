@@ -288,7 +288,7 @@ class PlutoSdr(object):
         return fs/8 if self.tx_interpolation else fs
     
     def _get_txUpSampling(self):
-        """control receiver output sampling frequency in MHz"""
+        """control transmitter output interpolation"""
         # only 2 options dac_rate or dac_rate/8
         _dac = self.tx_channels[0].attrs
         value = _dac['sampling_frequency'].value

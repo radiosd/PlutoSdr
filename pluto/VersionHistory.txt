@@ -1,11 +1,17 @@
 PlutoSdr
 
-Ver 1.0.1x	Initial release good control of all RF parameters for both Rx and Tx.
-		Some useful tests, but see ToDo.
+Ver 1.0.1x	Initial release good control of all RF parameters for both Rx
+		abd Tx. Some useful tests, but see ToDo.
 
-Ver 1.0.2	Corrections and modifications with inclusion of LGPLv2 license conditions
+Ver 1.0.2	Corrections and modifications with inclusion of LGPLv2 license 
+		conditions
+
+Ver 1.1.x	More thorough debugging of readRx, writeTx, implementation of
+		capture and playback.  Some hardware testing (demontration) 
+		using ipython notebooks
 
 ToDo:
-*) Incomplete testing of PlutoSdr - cannot see how to test code without the device connected
-*) There is the ability to readRx and writeTx, but not a way to save received signals or send recorded signals; capture() and playback() have been done for RTL device. Open issue is the ''other'' information on the device (LO, description etc)
+*) Incomplete testing of PlutoSdr 
+  - cannot see how to test code without the device connected
 *) Limited implementation of rx/tx fir control
+  - Unclear how to creat filter files without matlab
