@@ -22,4 +22,4 @@ setup(name='PlutoSDR',
       packages = ['pluto']   # add name(s) of package(s)
       )
 
-# I'm sure there is more to add, but for now ok to install packaged and scripts
+# I'm sure there is more to add, but for now ok to install basic packages and scripts

@@ -372,7 +372,7 @@ class PlutoSdr(object):
             self._tx_buff.push()
         except OSError as oserr:
             self.tx_state = self.TX_OFF
-            raise OSError('failed to create an iio buffer') from oserr
+            raise OSError('failed to create an iio buffer') 
         # buffer retained after a successful call
         return count # just for now
 
