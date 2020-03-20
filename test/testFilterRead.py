@@ -11,7 +11,7 @@ import logging
 import unittest
 from pluto import readFilter
 
-TEST_FILE = 'test/LTE1p4_MHz'
+TEST_FILE = 'LTE1p4_MHz'
 # a represetative sample of data is hard coded in testFunction()
 RX_TAPS = [5, -21, -51, -120, -212, -338, -471, -599]  # first and last 8
 TX_TAPS = [26, 12, 14, -30, -90, -198, -323, -465]
