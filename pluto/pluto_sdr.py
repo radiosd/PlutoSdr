@@ -182,14 +182,16 @@ class PlutoSdr(object):
     def _set_rx_gain_mode(self, mode):
         """set the gain mode to one of those available"""
         avail = self.phy_rx.attrs['gain_control_mode_available'].value
-        _mode = mode[0].upper()                    # allow setting with just the first letter
-        options = avail.split() 
-        avail = [av[0].upper() for av in options]
-        if _mode in avail:
-            self.phy_rx.attrs['gain_control_mode'].value = options[avail.index(_mode)]
-            logging.debug('gain mode set:', options[avail.index(_mode)])
+        avail = avail.split() 
+        # allow setting with just the first letter
+        _mode = '' if len(mode)==0 else mode[0].upper()                    
+        options = [av.capitalize()[0] for av in avail]
+        if _mode in options:
+            res = avail[options.index(_mode)]
+            self.phy_rx.attrs['gain_control_mode'].value = res
+            logging.debug('gain mode set:', res)
         else:
-            print('modes are:', avail.title())
+            print('error: available modes are', avail)
     
     def _get_rx_gain_mode(self):
         """get the gain mode to one of those available"""
